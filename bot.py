@@ -1,6 +1,8 @@
 import logging
 import os
 from datetime import datetime
+from threading import Thread
+from flask import Flask
 
 from telegram import Update
 from telegram.ext import (
@@ -189,7 +191,19 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"💰 လက်ရှိ လက်ကျန်ငွေ: {bal:,.2f} ကျပ်"
         f"{history_text}"
     )
+#Flask web server
+web_app = Flask(__name__)
+@web_app.route("/")
+def home():
+    return "Bot is running!"
+def run_web_server():
+    port=
+int(os.environ.get("PORT", 10000))
+    web_app.run(host="0.0.0.0",
+port=port)
 
+Thread(target=run_web_server,
+daemon=True).start()
 
 def main():
     TOKEN ="8829496333:AAG3WdBg7nGv3jgqB2mcIVW9sqDa8ltpfCs"
