@@ -201,8 +201,7 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 #Flask web server
 web_app = Flask(__name__)
-    
- @web_app.route("/")
+@web_app.route("/")
 def home():
     return "Bot is running!"
         
