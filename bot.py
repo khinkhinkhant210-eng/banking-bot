@@ -164,35 +164,32 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "ကျေးဇူးပြု၍ ပမာဏ ထည့်သွင်းပါ။\n"
             "ဥပမာ: /deposit 20000"
         )
-
-
 async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    history_list = USER_HISTORY.get(user_id,[])
+    history_list = USER_HISTORY.get(user_id, [])
 
     current_month = datetime.now().month
-    current_year =datetime.now().year
+    current_year = datetime.now().year
 
-    total_withdraw = 0.0
+    total_withdrawn = 0.0
     total_deposited = 0.0
     withdraw_details = []
 
     for item in history_list:
-       tx_date = datetime.strptime(item['date'], '%Y-%m-%d %H:%M')
-        # လက်ရှိလအတွင်း ပြုလုပ်ခဲ့သော မှတ်တမ်းများကိုသာ စုပေါင်းခြင်း
+        tx_date = datetime.strptime(item['date'], '%Y-%m-%d %H:%M')
         if tx_date.month == current_month and tx_date.year == current_year:
             total_withdrawn += item['amount']
             withdraw_details.append(
                 f"- {item['date']} - {item['amount']:,.2f} ကျပ် ({item['reason']})"
             )
 
-        bal = USER_BALANCES.get(user_id, 0)
+    bal = USER_BALANCES.get(user_id, 0)
 
-        summary_text = (
-            f"📊 **Monthly Summary ({current_year}-{current_month:02d})**\n\n"
-            f"💰 လက်ရှိ လက်ကျန်ငွေ: {bal:,.2f} ကျပ်\n"
-            f"📤 ယခုလ စုစုပေါင်း ထုတ်ယူငွေ: {total_withdrawn:,.2f} ကျပ်\n\n"
-            f"📝 **ထုတ်ယူမှု မှတ်တမ်းများ:**\n"
+    summary_text = (
+        f"📊 **Monthly Summary ({current_year}-{current_month:02d})**\n\n"
+        f"💰 လက်ရှိ လက်ကျန်ငွေ: {bal:,.2f} ကျပ်\n"
+        f"📤 ယခုလ စုစုပေါင်း ထုတ်ယူငွေ: {total_withdrawn:,.2f} ကျပ်\n\n"
+        f"📝 **ထုတ်ယူမှု မှတ်တမ်းများ:**\n"
     )
 
     if withdraw_details:
@@ -201,8 +198,8 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
         summary_text += "ယခုလအတွင်း ထုတ်ယူထားသော မှတ်တမ်း မရှိသေးပါ။"
 
     await update.message.reply_text(summary_text, parse_mode="Markdown")
-    
-    #Flask web server
+
+     #Flask web server
     web_app = Flask(__name__)
     @web_app.route("/")
     def home():
