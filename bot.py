@@ -22,7 +22,7 @@ USER_BALANCES = {}
 # User တစ်ဦးချင်းစီ၏ ငွေထုတ်ယူမှုမှတ်တမ်း
 USER_HISTORY = {}
 
-DEFAULT_BALANCE = 100_000_000
+DEFAULT_BALANCE = 0.0
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -168,38 +168,49 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
+    history_list = USER_HISTORY .get(user_id,[])
 
-    bal = USER_BALANCES.get(user_id, DEFAULT_BALANCE)
-    history_list = USER_HISTORY.get(user_id, [])
+    current_month = datetime.now().month
+    current_year =datetime.now().year
 
-    if history_list:
-        history_text = "\n\n📋 ငွေထုတ်ယူခဲ့သည့် မှတ်တမ်းများ:\n"
+    total_withdraw = 0.0
+    total_deposited = 0.0
+    withdraw_details = []
 
-        for item in history_list:
-            history_text += (
-                f"• {item['date']} - "
-                f"{item['amount']:,.2f} ကျပ် "
-                f"({item['reason']})\n"
+    for item in history _list:
+        tx_date = datetime.strptime(item['date'],'%Y-%m-%d %H:%M')
+        # လက်ရှိလအတွင်း ပြုလုပ်ခဲ့သော မှတ်တမ်းများကိုသာ စုပေါင်းခြင်း
+        if tx_date.month == current_month and tx_date.year ==current_year:
+            total_withdrawn += item['amount']
+            withdraw_details.append(
+                f"- {item['date']} - {item['amount']:,.2f} ကျပ် ({item['reason']})"
             )
-    else:
-        history_text = (
-            "\n\n📋 ငွေထုတ်ယူထားသော မှတ်တမ်း မရှိသေးပါ။"
-        )
 
-    await update.message.reply_text(
-        "📊 Monthly Summary\n\n"
-        f"💰 လက်ရှိ လက်ကျန်ငွေ: {bal:,.2f} ကျပ်"
-        f"{history_text}"
+        bal = USER_BALANCES.get(user_id, 0)
+
+        summary_text = (
+            f"📊 **Monthly Summary ({current_year}-{current_month:02d})**\n\n"
+            f"💰 လက်ရှိ လက်ကျန်ငွေ: {bal:,.2f} ကျပ်\n"
+            f"📤 ယခုလ စုစုပေါင်း ထုတ်ယူငွေ: {total_withdrawn:,.2f} ကျပ်\n\n"
+            f"📝 **ထုတ်ယူမှု မှတ်တမ်းများ:**\n"
     )
-#Flask web server
-web_app = Flask(__name__)
-@web_app.route("/")
-def home():
-    return "Bot is running!"
-def run_web_server():
+
+    if withdraw_details:
+        summary_text += "\n".join(withdraw_details)
+    else:
+        summary_text += "ယခုလအတွင်း ထုတ်ယူထားသော မှတ်တမ်း မရှိသေးပါ။"
+
+    await update.message.reply_text(summary_text, parse_mode="Markdown")
+    
+    #Flask web server
+    web_app = Flask(__name__)
+    @web_app.route("/")
+    def home():
+        return "Bot is running!"
+    def run_web_server():
     port=int(os.environ.get("PORT", 10000))
     web_app.run(host="0.0.0.0",
-port=port)
+    port=port)
 
 Thread(target=run_web_server,
 daemon=True).start()
@@ -208,7 +219,7 @@ def main():
     TOKEN ="8829496333:AAG3WdBg7nGv3jgqB2mcIVW9sqDa8ltpfCs"
     app = ApplicationBuilder().token(TOKEN).build()
 
-    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler(["start","restart"], start))
     app.add_handler(CommandHandler("setbalance", set_balance))
     app.add_handler(CommandHandler("balance", balance))
     app.add_handler(CommandHandler("withdraw", withdraw))
