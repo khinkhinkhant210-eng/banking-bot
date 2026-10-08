@@ -205,10 +205,9 @@ web_app = Flask(__name__)
 def home():
     return "Bot is running!"
         
- def run_web_server():
+def run_web_server():
     port=int(os.environ.get("PORT", 10000))
-     web_app.run(host="0.0.0.0",port=port)
-
+    web_app.run(host="0.0.0.0",port=port)
 Thread(target=run_web_server, daemon=True).start()
 
 def main():
