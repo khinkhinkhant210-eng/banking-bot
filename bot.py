@@ -199,16 +199,16 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(summary_text, parse_mode="Markdown")
 
-    #Flask web server
-    web_app = Flask(__name__)
+#Flask web server
+web_app = Flask(__name__)
     
-    @web_app.route("/")
-    def home():
-        return "Bot is running!"
+ @web_app.route("/")
+def home():
+    return "Bot is running!"
         
-    def run_web_server():
-        port=int(os.environ.get("PORT", 10000))
-        web_app.run(host="0.0.0.0",port=port)
+ def run_web_server():
+    port=int(os.environ.get("PORT", 10000))
+     web_app.run(host="0.0.0.0",port=port)
 
 Thread(target=run_web_server, daemon=True).start()
 
