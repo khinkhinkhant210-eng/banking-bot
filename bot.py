@@ -177,8 +177,8 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
     total_deposited = 0.0
     withdraw_details = []
 
-    for item in history _list:
-        tx_date = datetime.strptime(item['date'],    '%Y-%m-%d %H:%M')
+    for item in history_list:
+       tx_date = datetime.strptime(item['date'], '%Y-%m-%d %H:%M')
         # လက်ရှိလအတွင်း ပြုလုပ်ခဲ့သော မှတ်တမ်းများကိုသာ စုပေါင်းခြင်း
         if tx_date.month == current_month and tx_date.year == current_year:
             total_withdrawn += item['amount']
