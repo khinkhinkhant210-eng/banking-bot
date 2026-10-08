@@ -168,7 +168,7 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
-    history_list = USER_HISTORY .get(user_id,[])
+    history_list = USER_HISTORY.get(user_id,[])
 
     current_month = datetime.now().month
     current_year =datetime.now().year
@@ -180,7 +180,7 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
     for item in history _list:
         tx_date = datetime.strptime(item['date'],'%Y-%m-%d %H:%M')
         # လက်ရှိလအတွင်း ပြုလုပ်ခဲ့သော မှတ်တမ်းများကိုသာ စုပေါင်းခြင်း
-        if tx_date.month == current_month and tx_date.year ==current_year:
+        if tx_date.month == current_month and tx_date.year == current_year:
             total_withdrawn += item['amount']
             withdraw_details.append(
                 f"- {item['date']} - {item['amount']:,.2f} ကျပ် ({item['reason']})"
