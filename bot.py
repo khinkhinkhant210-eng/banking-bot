@@ -210,7 +210,7 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
         port=int(os.environ.get("PORT", 10000))
         web_app.run(host="0.0.0.0",port=port)
 
-Thread(target=run_web_server,daemon=True).start()
+Thread(target=run_web_server, daemon=True).start()
 
 def main():
     TOKEN ="8829496333:AAG3WdBg7nGv3jgqB2mcIVW9sqDa8ltpfCs"
