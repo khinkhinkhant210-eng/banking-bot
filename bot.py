@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 from threading import Thread
 from flask import Flask
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 
 # User တစ်ဦးချင်းစီ၏ စတင်သည့်ရက်ကို သိမ်းရန်
 USER_START_DATES = {}
