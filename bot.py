@@ -4,6 +4,11 @@ import os
 from datetime import datetime
 from threading import Thread
 from flask import Flask
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+# User တစ်ဦးချင်းစီ၏ စတင်သည့်ရက်ကို သိမ်းရန်
+USER_START_DATES = {}
+
 
 from telegram import Update
 from telegram.ext import (
@@ -219,6 +224,21 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
         summary_text += "ယခုလအတွင်း ထုတ်ယူထားသော မှတ်တမ်း မရှိသေးပါ။"
 
     await update.message.reply_text(summary_text, parse_mode="Markdown")
+    
+    async def check_monthly_reminders(application):
+        now = datetime.now()
+        for user_id, start_date in list(USER_START_DATES.items()):
+        # တစ်လပြည့်ဖို့ ၁ ရက်အလို (၂၉ ရက်မြောက်နေ့) ရောက်ပြီလား စစ်ဆေးခြင်း
+            if now - start_date >= timedelta(days=29) and now - start_date < timedelta(days=30):
+                try:
+                    await application.bot.send_message(
+                        chat_id=user_id,
+                        text="⚠️ **သတိပေးချက်**\n\nမနက်ဖြန်ဆိုရင် ဘတ်ဂျက်သတ်မှတ်ထားတဲ့ တစ်လပြည့်တော့မှာဖြစ်လို့ လက်ကျန်ငွေနဲ့ သုံးစွဲမှုမှတ်တမ်းတွေကို စစ်ဆေးပါ။",
+            parse_mode="Markdown"
+            )
+        except Exception as e:
+            print(f"Error sending reminder to {user_id}: {e}")
+
 
 #Flask web server
 web_app = Flask(__name__)
@@ -243,6 +263,12 @@ def main():
     app.add_handler(CommandHandler("summary", summary))
 
     print("Bot အလုပ်စလုပ်နေပါပြီ...")
+    
+    # Scheduler စတင်ရန်
+    scheduler = AsyncIOScheduler()
+    scheduler.add_job(check_monthly_reminders, "cron", hour=9, minute=0, args=[app])
+    scheduler.start()
+
 
     app.run_polling()
 
