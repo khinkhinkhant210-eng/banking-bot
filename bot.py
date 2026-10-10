@@ -263,7 +263,7 @@ def main():
     print("Bot အလုပ်စလုပ်နေပါပြီ...")
     
     # Scheduler စတင်ရန်
-    scheduler = AsyncIOScheduler()
+    scheduler = BackgroundScheduler()
     scheduler.add_job(check_monthly_reminders, "cron", hour=9, minute=0, args=[app])
     scheduler.start()
 
