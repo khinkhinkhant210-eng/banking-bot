@@ -190,7 +190,7 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "ဥပမာ: /deposit 20000"
         )
 
- async def check_monthly_reminders(application):
+     async def check_monthly_reminders(application):
         now = datetime.now()
         for user_id, start_date in list(USER_START_DATES.items()):
         # တစ်လပြည့်ဖို့ ၁ ရက်အလို (၂၉ ရက်မြောက်နေ့) ရောက်ပြီလား စစ်ဆေးခြင်း
