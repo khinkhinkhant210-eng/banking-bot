@@ -189,6 +189,21 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "ကျေးဇူးပြု၍ ပမာဏ ထည့်သွင်းပါ။\n"
             "ဥပမာ: /deposit 20000"
         )
+
+ async def check_monthly_reminders(application):
+        now = datetime.now()
+        for user_id, start_date in list(USER_START_DATES.items()):
+        # တစ်လပြည့်ဖို့ ၁ ရက်အလို (၂၉ ရက်မြောက်နေ့) ရောက်ပြီလား စစ်ဆေးခြင်း
+            if now - start_date >= timedelta(days=29) and now - start_date < timedelta(days=30):
+                try:
+                    await application.bot.send_message(
+                        chat_id=user_id,
+                        text="⚠️ **သတိပေးချက်**\n\nမနက်ဖြန်ဆိုရင် ဘတ်ဂျက်သတ်မှတ်ထားတဲ့ တစ်လပြည့်တော့မှာဖြစ်လို့ လက်ကျန်ငွေနဲ့ သုံးစွဲမှုမှတ်တမ်းတွေကို စစ်ဆေးပါ။",
+            parse_mode="Markdown"
+            )
+                except Exception as e:
+                    print(f"Error sending reminder to {user_id}: {e}")
+
 async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     history_list = USER_HISTORY.get(user_id, [])
@@ -224,21 +239,6 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(summary_text, parse_mode="Markdown")
     
-    async def check_monthly_reminders(application):
-        now = datetime.now()
-        for user_id, start_date in list(USER_START_DATES.items()):
-        # တစ်လပြည့်ဖို့ ၁ ရက်အလို (၂၉ ရက်မြောက်နေ့) ရောက်ပြီလား စစ်ဆေးခြင်း
-            if now - start_date >= timedelta(days=29) and now - start_date < timedelta(days=30):
-                try:
-                    await application.bot.send_message(
-                        chat_id=user_id,
-                        text="⚠️ **သတိပေးချက်**\n\nမနက်ဖြန်ဆိုရင် ဘတ်ဂျက်သတ်မှတ်ထားတဲ့ တစ်လပြည့်တော့မှာဖြစ်လို့ လက်ကျန်ငွေနဲ့ သုံးစွဲမှုမှတ်တမ်းတွေကို စစ်ဆေးပါ။",
-            parse_mode="Markdown"
-            )
-                except Exception as e:
-                    print(f"Error sending reminder to {user_id}: {e}")
-
-
 #Flask web server
 web_app = Flask(__name__)
 @web_app.route("/")
