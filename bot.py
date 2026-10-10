@@ -143,8 +143,7 @@ async def withdraw(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "reason": reason,
             "date": current_time,
         })
-
-        save data()
+        save_data()
 
         await update.message.reply_text(
             f"✅ {amount:,.2f} ကျပ် ထုတ်ယူလိုက်ပါပြီ။\n"
