@@ -235,8 +235,8 @@ async def summary(update: Update, context: ContextTypes.DEFAULT_TYPE):
                         text="⚠️ **သတိပေးချက်**\n\nမနက်ဖြန်ဆိုရင် ဘတ်ဂျက်သတ်မှတ်ထားတဲ့ တစ်လပြည့်တော့မှာဖြစ်လို့ လက်ကျန်ငွေနဲ့ သုံးစွဲမှုမှတ်တမ်းတွေကို စစ်ဆေးပါ။",
             parse_mode="Markdown"
             )
-                except Exception as e:
-            print(f"Error sending reminder to {user_id}: {e}")
+                except Exception as e
+                    print(f"Error sending reminder to {user_id}: {e}")
 
 
 #Flask web server
