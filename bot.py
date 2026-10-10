@@ -1,4 +1,5 @@
 import logging
+import json
 import os
 from datetime import datetime
 from threading import Thread
@@ -16,11 +17,27 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
-# User တစ်ဦးချင်းစီ၏ လက်ကျန်ငွေ
-USER_BALANCES = {}
+DATA_FILE = "banking_data.json"
 
-# User တစ်ဦးချင်းစီ၏ ငွေထုတ်ယူမှုမှတ်တမ်း
-USER_HISTORY = {}
+def load_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            balances = {int(k): v for k, v in data.get("balances", {}).items()}
+            history = {int(k): v for k, v in data.get("history", {}).items()}
+            return balances, history
+    return {}, {}
+
+def save_data():
+    data = {
+        "balances": USER_BALANCES,
+        "history": USER_HISTORY
+    }
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)
+
+# ယာယီသိမ်းမည့်အစား ဖိုင်မှ ဒေတာများကို ဖတ်ယူမည်
+USER_BALANCES, USER_HISTORY = load_data()
 
 DEFAULT_BALANCE = 0.0
 
@@ -54,6 +71,7 @@ async def set_balance(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         USER_BALANCES[user_id] = amount
+        save_data()
 
         await update.message.reply_text(
             f"သင့်၏ ငွေစာရင်းအသစ်ကို "
@@ -121,6 +139,8 @@ async def withdraw(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "date": current_time,
         })
 
+        save data()
+
         await update.message.reply_text(
             f"✅ {amount:,.2f} ကျပ် ထုတ်ယူလိုက်ပါပြီ။\n"
             f"📅 ရက်စွဲ: {current_time}\n"
@@ -152,6 +172,7 @@ async def deposit(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
 
         USER_BALANCES[user_id] += amount
+        save_data()
 
         await update.message.reply_text(
             f"✅ {amount:,.2f} ကျပ် ထည့်သွင်းလိုက်ပါပြီ။\n"
